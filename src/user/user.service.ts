@@ -27,7 +27,7 @@ export class UserService {
     });
 
     if (existingUser) {
-      throw new ConflictException('El email ya está registrado');
+      throw new ConflictException('This email is already in use');
     }
 
     const salt = await bcrypt.genSalt(10);
@@ -52,15 +52,15 @@ export class UserService {
     const { email, password } = dto;
     const user = await this.prisma.user.findUnique({ where: { email } });
     if (!user) {
-      throw new UnauthorizedException('Credenciales inválidas');
+      throw new UnauthorizedException('Invalid credentials');
     }
-   
+
     const passwordMatches = await bcrypt.compare(password, user.password);
     if (!passwordMatches) {
-      throw new UnauthorizedException('Credenciales inválidas');
-    }  
+      throw new UnauthorizedException('Invalid credentials');
+    }
     const token = this.jwtService.sign({ id: user.id, email: user.email });
-     
+
     return {
       user: {
         id: user.id,
@@ -73,6 +73,10 @@ export class UserService {
 
   update(id: number, updateUserDto: UpdateUserDto) {
     return `This action updates a #${id} user`;
+  }
+
+  findAll() {
+    return this.prisma.user.findMany();
   }
 
   remove(id: number) {
