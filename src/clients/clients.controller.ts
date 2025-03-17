@@ -19,28 +19,36 @@ export class ClientsController {
   constructor(private readonly clientsService: ClientsService) {}
 
   @Post()
-  @UseGuards(JwtAuthGuard) // Proteger con JWT
+  @UseGuards(JwtAuthGuard) 
   async create(@Request() req, @Body() dto: CreateClientDto) {
     return this.clientsService.create(req.user.id, dto);
   }
 
   @Get()
-  findAll() {
-    return this.clientsService.findAll();
+  @UseGuards(JwtAuthGuard) 
+  findAll(@Request() req) {
+    return this.clientsService.findAll(req.user.id);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.clientsService.findOne(+id);
+  @UseGuards(JwtAuthGuard) 
+  findOne(@Request() req, @Param('id') id: string) {
+    return this.clientsService.findOne(req.user.id, id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateClientDto: UpdateClientDto) {
-    return this.clientsService.update(+id, updateClientDto);
+  @UseGuards(JwtAuthGuard) 
+  update(
+    @Request() req,
+    @Param('id') id: string,
+    @Body() updateClientDto: UpdateClientDto,
+  ) {
+    return this.clientsService.update(req.user.id, id, updateClientDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.clientsService.remove(+id);
+  @UseGuards(JwtAuthGuard) 
+  remove(@Request() req, @Param('id') id: string) {
+    return this.clientsService.remove(req.user.id, id);
   }
 }
